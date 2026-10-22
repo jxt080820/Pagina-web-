@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GlowAI - Tienda & Asesoría IA</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        glow: {
+                            50: '#fff5f8',
+                            100: '#fce7f3',
+                            200: '#fbcfe8',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fff5f8;
+            color: #374151;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff5f8;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fbcfe8;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ec4899;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Header Navigation -->
+    <header class="bg-white/90 backdrop-blur-md border-b-2 border-glow-200 sticky top-0 z-40 shadow-sm transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 text-2xl font-black text-glow-500 tracking-tight hover:opacity-90 transition-opacity">
+                <span>✨</span>
+                <span>GlowAI</span>
+            </a>
+            
+            <nav class="hidden md:flex items-center gap-8">
+                <a id="nav-cat" class="text-sm font-semibold text-gray-700 hover:text-glow-500 cursor-pointer transition-colors">Catálogo</a>
+                <a id="nav-diag" class="text-sm font-semibold text-gray-700 hover:text-glow-500 cursor-pointer transition-colors flex items-center gap-1.5">
+                    <span class="inline-block w-2 h-2 rounded-full bg-glow-500 animate-pulse"></span>
+                    Diagnóstico IA
+                </a>
+                <a id="nav-compras" class="text-sm font-semibold text-gray-700 hover:text-glow-500 cursor-pointer transition-colors">Historial de Compras</a>
+            </nav>
+
+            <button id="btn-open-cart" class="bg-glow-100 hover:bg-glow-200 border border-glow-200 rounded-full px-4 py-2 font-bold text-glow-600 text-sm transition-all duration-200 flex items-center gap-2 hover:scale-105 active:scale-95 shadow-sm">
+                <span>🛍️</span>
+                <span>Mi Carrito</span>
+                <span id="cart-count" class="bg-glow-500 text-white text-xs rounded-full min-w-[22px] h-[22px] px-1.5 inline-flex items-center justify-center font-extrabold">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="bg-gradient-to-b from-glow-100 via-glow-50 to-[#fff5f8] py-12 md:py-20 px-4 text-center relative overflow-hidden">
+        <div class="max-w-3xl mx-auto relative z-10">
+            <span class="inline-block bg-white/80 border border-glow-200 text-glow-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
+                Asesoría de Belleza Inteligente
+            </span>
+            <h1 class="text-3xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight mb-4">
+                Descubre tu Rutina & Maquillaje Ideal
+            </h1>
+            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto mb-8 font-medium">
+                Encuentra los 15 mejores productos de Skincare y Maquillaje formulados para realzar tu belleza natural con recomendaciones personalizadas de nuestra IA.
+            </p>
+            <button id="btn-hero-ia" class="bg-glow-500 hover:bg-glow-600 text-white border-0 px-8 py-3.5 rounded-full text-base font-extrabold cursor-pointer shadow-lg shadow-glow-500/30 transition-all duration-200 hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto">
+                <span>✨ Probar Diagnóstico con IA</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Main Catalog Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full" id="sec-catalogo">
+        <!-- Filter Bar -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b-2 border-glow-200 pb-5">
+            <div>
+                <h2 class="text-2xl font-black text-gray-900 tracking-tight">Catálogo de Productos</h2>
+                <p class="text-xs text-gray-500 mt-1">Explora nuestra colección seleccionada de belleza</p>
+            </div>
+            <div class="flex flex-wrap gap-2" id="filter-buttons-container">
+                <button class="filter-btn active bg-glow-500 text-white px-4 py-2 rounded-full font-bold text-xs sm:text-sm cursor-pointer transition-all shadow-sm" data-cat="todas">Todos</button>
+                <button class="filter-btn bg-glow-100 hover:bg-glow-200 text-glow-600 px-4 py-2 rounded-full font-bold text-xs sm:text-sm cursor-pointer transition-all border border-glow-200" data-cat="Skincare">Skincare</button>
+                <button class="filter-btn bg-glow-100 hover:bg-glow-200 text-glow-600 px-4 py-2 rounded-full font-bold text-xs sm:text-sm cursor-pointer transition-all border border-glow-200" data-cat="Rostro">Rostro</button>
+                <button class="filter-btn bg-glow-100 hover:bg-glow-200 text-glow-600 px-4 py-2 rounded-full font-bold text-xs sm:text-sm cursor-pointer transition-all border border-glow-200" data-cat="Ojos">Ojos</button>
+                <button class="filter-btn bg-glow-100 hover:bg-glow-200 text-glow-600 px-4 py-2 rounded-full font-bold text-xs sm:text-sm cursor-pointer transition-all border border-glow-200" data-cat="Labios">Labios</button>
+            </div>
+        </div>
+
+        <!-- Product Grid Grid Container -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 min-h-[300px]">
+            <!-- Dynamic JavaScript Product Cards rendered here -->
+        </div>
+    </main>
+
+    <!-- Shopping Cart Modal Drawer -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden transition-opacity duration-300">
+        <div class="fixed right-0 top-0 h-full w-full max-w-md bg-white flex flex-col shadow-2xl transition-transform duration-300 ease-in-out transform translate-x-0">
+            <div class="p-5 bg-glow-100 border-b border-glow-200 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🛍️</span>
+                    <span class="font-extrabold text-gray-900 text-lg">Tu Carrito</span>
+                </div>
+                <button id="btn-close-cart" class="text-gray-500 hover:text-gray-800 text-xl font-bold p-1 rounded-lg hover:bg-white/50 transition-colors">✕</button>
+            </div>
+
+            <div id="cart-items" class="p-5 flex-grow overflow-y-auto space-y-4">
+                <!-- Cart Items Rendered Here -->
+            </div>
+
+            <div class="p-5 bg-gray-50 border-t border-gray-100 space-y-3 overflow-y-auto max-h-[55vh]">
+                <!-- Datos de la clienta -->
+                <div class="space-y-2 border-b border-gray-200 pb-3">
+                    <h3 class="font-bold text-gray-900">Datos de la clienta</h3>
+                    <input id="client-name" type="text" autocomplete="name" placeholder="Nombre completo"
+                        class="w-full border border-gray-200 rounded-lg p-2.5 text-sm">
+                    <textarea id="client-address" autocomplete="street-address" placeholder="Dirección de entrega: calle, número, colonia, ciudad y CP"
+                        class="w-full border border-gray-200 rounded-lg p-2.5 text-sm" rows="2"></textarea>
+                    <input id="client-phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="15"
+                        placeholder="Número telefónico" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm">
+                </div>
+
+                <!-- Método de pago -->
+                <div class="space-y-2">
+                    <label for="payment-method" class="block font-bold text-gray-900 text-sm">Método de pago</label>
+                    <select id="payment-method" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm">
+                        <option value="">Selecciona un método de pago</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Tarjeta de débito/crédito">Tarjeta de débito/crédito</option>
+                        <option value="Transferencia bancaria">Transferencia bancaria</option>
+                        <option value="Pago al recibir">Pago al recibir</option>
+                    </select>
+                </div>
+
+                <!-- Administración de tarjetas -->
+                <div id="card-manager" class="hidden border border-glow-200 rounded-xl p-3 bg-white space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="font-bold text-gray-800 text-sm">💳 Mis tarjetas</p>
+                        <button type="button" id="btn-add-card" class="text-glow-600 font-bold text-sm">+ Agregar tarjeta</button>
+                    </div>
+                    <div id="saved-cards" class="space-y-2"></div>
+                    <p id="no-cards-message" class="text-xs text-gray-500">Todavía no tienes tarjetas agregadas.</p>
+                    <div id="card-form" class="hidden space-y-2 border-t pt-3">
+                        <input id="card-holder" type="text" autocomplete="cc-name" placeholder="Nombre del titular"
+                            class="w-full border border-gray-200 rounded-lg p-2.5 text-sm">
+                        <input id="card-number" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="23"
+                            placeholder="Número de tarjeta" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input id="card-expiry" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5"
+                                placeholder="Vencimiento MM/AA" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm">
+                            <input id="card-cvv" type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4"
+                                placeholder="CVV" class="w-full border border-gray-200 rounded-lg p-2.5 text-sm">
+                        </div>
+                        <p class="text-xs text-gray-500">Demo: no se guardan el número completo ni el CVV y no se realizan cobros reales.</p>
+                        <div class="flex gap-2">
+                            <button type="button" id="btn-save-card" class="bg-glow-500 text-white rounded-lg px-3 py-2 text-sm font-bold">Guardar tarjeta</button>
+                            <button type="button" id="btn-cancel-card" class="border rounded-lg px-3 py-2 text-sm">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-500">Esta tienda de demostración registra pedidos, pero no procesa pagos reales.</p>
+
+                <div class="flex justify-between items-center text-lg font-black text-gray-900">
+                    <span>Total a pagar:</span>
+                    <span id="cart-total" class="text-glow-600 text-xl">$0.00</span>
+                </div>
+                <button id="btn-checkout" class="w-full bg-glow-500 hover:bg-glow-600 text-white font-extrabold py-3.5 px-4 rounded-xl transition-all shadow-md active:scale-95 text-center">
+                    Proceder al Pago
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchases History Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full" id="sec-compras">
+        <div class="bg-white border border-glow-200 rounded-2xl p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
+                <div>
+                    <h2 class="text-xl font-black text-gray-900">Historial & Registro de Compras</h2>
+                    <p class="text-xs text-gray-500">Base de datos de pedidos guardados en tu navegador</p>
+                </div>
+                <button id="btn-export-excel" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-sm active:scale-95 w-fit">
+                    <span>📊</span> Exportar a Excel (.xlsx)
+                </button>
+            </div>
+            <div id="purchase-history" class="space-y-3 max-h-[350px] overflow-y-auto pr-2">
+                <p class="text-sm text-gray-400 text-center py-6">Todavía no hay compras registradas.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating AI Chatbot Widget -->
+    <div class="fixed bottom-5 right-5 z-50">
+        <button id="btn-toggle-chat" class="bg-glow-500 hover:bg-glow-600 text-white w-14 h-14 rounded-full shadow-lg shadow-glow-500/40 flex items-center justify-center text-2xl transition-all hover:scale-110 active:scale-95">
+            💬
+        </button>
+
+        <div id="chat-window" class="absolute bottom-16 right-0 w-[90vw] sm:w-[360px] h-[500px] bg-white rounded-2xl border border-glow-200 shadow-2xl hidden flex-col overflow-hidden transition-all duration-300">
+            <!-- Chat Header -->
+            <div class="bg-glow-500 text-white p-4 font-bold flex justify-between items-center shadow-sm">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">✨</span>
+                    <div>
+                        <div class="text-sm font-extrabold leading-none">Glowy - Asesora IA</div>
+                        <div class="text-[10px] text-glow-100 font-normal">En línea | Especialista Skincare</div>
+                    </div>
+                </div>
+                <button id="btn-close-chat" class="text-white hover:text-glow-100 text-lg font-bold">✕</button>
+            </div>
+
+            <!-- Chat Message Body -->
+            <div id="chat-body" class="p-4 flex-grow overflow-y-auto bg-gray-50/50 space-y-3 text-xs">
+                <div class="chat-msg bot bg-white border border-glow-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-gray-800 max-w-[85%]">
+                    ¡Hola! 👋 Soy Glowy, tu asesora de belleza interactiva. ¿Quieres que te ayude a armar tu rutina ideal con tips personalizados?
+                </div>
+            </div>
+
+            <!-- Quick Action Test Trigger -->
+            <div class="p-2 bg-white border-t border-gray-100">
+                <button id="btn-start-test" class="w-full bg-glow-100 hover:bg-glow-200 text-glow-600 border border-glow-200 py-2 px-3 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5">
+                    <span>✨</span> Iniciar Diagnóstico de Piel con Tips
+                </button>
+            </div>
+
+            <!-- Input Footer Form -->
+            <form id="chat-form" class="p-2.5 bg-white border-t border-gray-100 flex gap-2 items-center">
+                <input type="text" id="chat-input" class="flex-grow border border-gray-200 rounded-full px-3.5 py-2 text-xs focus:outline-none focus:border-glow-500" placeholder="Escribe 'grasa', 'seca', 'labios'..." required>
+                <button type="submit" class="bg-glow-500 hover:bg-glow-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs shrink-0 transition-all">
+                    ➤
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SheetJS Excel Library -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+    <!-- Application Logic -->
+    <script>
+        // --- 1. PRODUCT DATABASE (15 PRODUCTS: 8 Skincare + 7 Makeup) ---
+        const products = [
+            // Skincare Products (8)
+            { id: 1, name: "Limpiador Facial Hidratante", category: "Skincare", skinType: "seca", price: 15.00, img: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80", desc: "Limpia suavemente sin alterar la barrera cutánea ni resecar." },
+            { id: 2, name: "Sérum de Ácido Hialurónico", category: "Skincare", skinType: "seca", price: 32.00, img: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&q=80", desc: "Hidratación multinivel profunda con efecto rellenador de líneas." },
+            { id: 3, name: "Sérum Niacinamida 10%", category: "Skincare", skinType: "grasa", price: 28.00, img: "https://images.unsplash.com/photo-1608248597260-8f334a18e9d5?w=400&q=80", desc: "Regula el exceso de sebo, calma brotes y minimiza poros." },
+            { id: 4, name: "Sérum Vitamina C Iluminador", category: "Skincare", skinType: "todas", price: 34.00, img: "https://images.unsplash.com/photo-1617897903246-719242758050?w=400&q=80", desc: "Potente antioxidante que aporta luminosidad y unifica el tono." },
+            { id: 5, name: "Crema Hidratante Ceramidas", category: "Skincare", skinType: "seca", price: 25.00, img: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=400&q=80", desc: "Nutre intensamente y repara pieles sensibles o deshidratadas." },
+            { id: 6, name: "Protector Solar FPS 50+ Fluido", category: "Skincare", skinType: "todas", price: 29.00, img: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=400&q=80", desc: "Acabado toque seco, alta protección UV sin residuos blancos." },
+            { id: 7, name: "Tónico Exfoliante AHA/BHA", category: "Skincare", skinType: "grasa", price: 24.00, img: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80", desc: "Exfoliación química suave para suavizar la textura de la piel." },
+            { id: 8, name: "Contorno de Ojos con Cafeína", category: "Skincare", skinType: "todas", price: 22.00, img: "https://images.unsplash.com/photo-1512290900676-26c2a4d4b51b?w=400&q=80", desc: "Desinflama ojeras y drena bolsas al instante." },
+
+            // Makeup Products (7 across Rostro, Ojos, Labios)
+            { id: 9, name: "Base Hidratante SkinGlow", category: "Rostro", skinType: "seca", price: 28.99, img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80", desc: "Cobertura media construible con un hermoso acabado jugoso." },
+            { id: 10, name: "Base Matificante PureMatte", category: "Rostro", skinType: "grasa", price: 26.50, img: "https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?w=400&q=80", desc: "Fórmula de larga duración con control de brillo aterciopelado." },
+            { id: 11, name: "Corrector Alta Cobertura", category: "Rostro", skinType: "todas", price: 18.00, img: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&q=80", desc: "Oculta ojeras e imperfecciones sin agrietarse." },
+            { id: 12, name: "Rubor en Crema Glow Touch", category: "Rostro", skinType: "todas", price: 19.00, img: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&q=80", desc: "Aporta un rubor natural y fresco a mejillas y labios." },
+            { id: 13, name: "Máscara Pestañas Volumétrica", category: "Ojos", skinType: "todas", price: 22.00, img: "https://images.unsplash.com/photo-1560700146-15555773360b?w=400&q=80", desc: "Efecto abanico resistente al agua sin grumos." },
+            { id: 14, name: "Tinta Velvet para Labios", category: "Labios", skinType: "todas", price: 15.00, img: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=400&q=80", desc: "Color vibrante ligero y cómodo de larga duración." },
+            { id: 15, name: "Spray Fijador Dewy Finish", category: "Rostro", skinType: "todas", price: 21.00, img: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80", desc: "Sella tu maquillaje extendiendo su duración por más de 12h." }
+        ];
+
+        // State Management
+        let cart = [];
+        let currentFilter = 'todas';
+        let purchases = [];
+        try {
+            const storedPurchases = JSON.parse(localStorage.getItem('glowai_purchases') || '[]');
+            purchases = Array.isArray(storedPurchases) ? storedPurchases : [];
+        } catch (e) {
+            purchases = [];
+        }
+
+        // Tarjetas de demostración: solo se conserva titular, últimos 4 dígitos y vencimiento.
+        let savedCards = [];
+        let selectedCardId = '';
+        try {
+            const storedCards = JSON.parse(localStorage.getItem('glowai_saved_cards') || '[]');
+            savedCards = Array.isArray(storedCards) ? storedCards : [];
+        } catch (e) {
+            savedCards = [];
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[char]));
+        }
+
+        // --- 2. CATALOG RENDER FUNCTION ---
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            if (!grid) return;
+
+            const filteredList = currentFilter === 'todas' 
+                ? products 
+                : products.filter(p => p.category === currentFilter);
+
+            if (filteredList.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400">No hay productos disponibles en esta categoría.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filteredList.map(p => `
+                <div class="bg-white border border-glow-200 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1">
+                    <div>
+                        <div class="relative overflow-hidden rounded-xl bg-gray-100 aspect-square mb-3">
+                            <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300" loading="lazy" onerror="this.src='https://placehold.co/400x400/fbcfe8/be185d?text=${encodeURIComponent(p.name)}'">
+                            <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-md border border-glow-200 text-glow-700 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                                ${p.category}
+                            </span>
+                        </div>
+                        <h3 class="font-black text-gray-900 text-base leading-snug mb-1">${p.name}</h3>
+                        <p class="text-xs text-gray-500 mb-4 line-clamp-2">${p.desc}</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                        <span class="text-lg font-black text-glow-600">$${p.price.toFixed(2)}</span>
+                        <button onclick="window.addToCart(${p.id})" class="bg-gray-900 hover:bg-glow-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-200 active:scale-95 flex items-center gap-1 shadow-sm">
+                            <span>+</span> Agregar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- 3. SHOPPING CART LOGIC ---
+        window.addToCart = function(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+
+            const existing = cart.find(i => i.id === id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...prod, qty: 1 });
+            }
+            updateCartUI();
+            
+            // Subtle notification animation on cart button
+            const cartBtn = document.getElementById('btn-open-cart');
+            if (cartBtn) {
+                cartBtn.classList.add('scale-110');
+                setTimeout(() => cartBtn.classList.remove('scale-110'), 200);
+            }
+        };
+
+        function updateCartUI() {
+            const count = cart.reduce((acc, item) => acc + item.qty, 0);
+            const total = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+
+
+            const countBadge = document.getElementById('cart-count');
+            const totalLabel = document.getElementById('cart-total');
+            if (countBadge) countBadge.textContent = count;
+            if (totalLabel) totalLabel.textContent = '$' + total.toFixed(2);
+            renderCartItems();
+        }
+
+        function renderCartItems() {
+            const container = document.getElementById('cart-items');
+            if (!container) return;
+            if (!cart.length) {
+                container.innerHTML = '<p class="text-sm text-gray-400 text-center py-10">Tu carrito está vacío. ¡Agrega algo bonito! ✨</p>';
+                return;
+            }
+            container.innerHTML = cart.map(item => `
+                <div class="flex gap-3 items-center border border-gray-100 rounded-xl p-3">
+                    <img src="${item.img}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover bg-gray-100" onerror="this.style.display='none'">
+                    <div class="flex-grow min-w-0">
+                        <p class="font-bold text-sm text-gray-900">${item.name}</p>
+                        <p class="text-xs text-gray-500">$${item.price.toFixed(2)} c/u</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <button type="button" onclick="window.changeQty(${item.id}, -1)" class="border rounded-md w-7 h-7 font-bold" aria-label="Restar uno">−</button>
+                            <span class="text-sm font-bold">${item.qty}</span>
+                            <button type="button" onclick="window.changeQty(${item.id}, 1)" class="border rounded-md w-7 h-7 font-bold" aria-label="Agregar uno">+</button>
+                            <button type="button" onclick="window.removeFromCart(${item.id})" class="ml-auto text-xs text-rose-600 font-bold">Eliminar</button>
+                        </div>
+                    </div>
+                    <p class="font-extrabold text-glow-600">$${(item.price * item.qty).toFixed(2)}</p>
+                </div>
+            `).join('');
+        }
+
+        window.changeQty = function(id, change) {
+            const item = cart.find(p => p.id === id);
+            if (!item) return;
+            item.qty += change;
+            if (item.qty <= 0) cart = cart.filter(p => p.id !== id);
+            updateCartUI();
+        };
+
+        window.removeFromCart = function(id) {
+            cart = cart.filter(p => p.id !== id);
+            updateCartUI();
+        };
+
+        function openCart() {
+            document.getElementById('cart-modal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+        function closeCart() {
+            document.getElementById('cart-modal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function loadPurchases() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('glowai_purchases') || '[]');
+                purchases = Array.isArray(saved) ? saved : [];
+            } catch (e) {
+                purchases = [];
+            }
+        }
+
+        function renderPurchaseHistory() {
+            const history = document.getElementById('purchase-history');
+            if (!history) return;
+            if (!purchases.length) {
+                history.innerHTML = '<p class="text-sm text-gray-400 text-center py-6">Todavía no hay compras registradas.</p>';
+                return;
+            }
+            history.innerHTML = [...purchases].reverse().map(p => `
+                <div class="border border-glow-100 rounded-xl p-4 bg-white">
+                    <div class="flex justify-between gap-3 items-start">
+                        <div>
+                            <p class="font-extrabold text-gray-900">Pedido #${escapeHtml(p.id)}</p>
+                            <p class="text-xs text-gray-500">${escapeHtml(p.date)}</p>
+                        </div>
+                        <p class="font-black text-glow-600">$${Number(p.total || 0).toFixed(2)}</p>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-700 space-y-1">
+                        <p><strong>Clienta:</strong> ${escapeHtml(p.clientName || 'No especificado')}</p>
+                        <p><strong>Dirección:</strong> ${escapeHtml(p.clientAddress || 'No especificada')}</p>
+                        <p><strong>Teléfono:</strong> ${escapeHtml(p.clientPhone || 'No especificado')}</p>
+                        <p><strong>Método de pago:</strong> ${escapeHtml(p.paymentMethod || 'No especificado')}${p.cardLast4 ? ` (•••• ${escapeHtml(p.cardLast4)})` : ''}</p>
+                    </div>
+                    <ul class="text-xs text-gray-600 mt-2 list-disc pl-4">
+                        ${(p.items || []).map(i => `<li>${escapeHtml(i.name)} × ${Number(i.qty) || 0}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        function checkout() {
+            if (!cart.length) {
+                alert('Tu carrito está vacío. Agrega un producto antes de continuar.');
+                return;
+            }
+
+            const clientName = document.getElementById('client-name').value.trim();
+            const clientAddress = document.getElementById('client-address').value.trim();
+            const clientPhone = document.getElementById('client-phone').value.trim();
+            const paymentMethod = document.getElementById('payment-method').value;
+
+            if (!clientName || !clientAddress || !clientPhone) {
+                alert('Completa el nombre, la dirección y el teléfono de la clienta.');
+                return;
+            }
+            if (!/^[+\d\s()\-]{7,15}$/.test(clientPhone)) {
+                alert('Ingresa un número telefónico válido.');
+                return;
+            }
+            if (!paymentMethod) {
+                alert('Selecciona un método de pago.');
+                return;
+            }
+
+            let cardLast4 = '';
+            if (paymentMethod === 'Tarjeta de débito/crédito') {
+                const selectedCard = savedCards.find(card => card.id === selectedCardId);
+                if (!selectedCard) {
+                    alert('Agrega y selecciona una tarjeta antes de confirmar la compra.');
+                    document.getElementById('card-manager').classList.remove('hidden');
+                    return;
+                }
+                cardLast4 = selectedCard.last4;
+            }
+
+            const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+            const purchase = {
+                id: Date.now().toString().slice(-8),
+                date: new Date().toLocaleString('es-MX'),
+                clientName,
+                clientAddress,
+                clientPhone,
+                paymentMethod,
+                cardLast4,
+                total,
+                items: cart.map(({id, name, price, qty}) => ({id, name, price, qty}))
+            };
+
+            purchases.push(purchase);
+            try {
+                localStorage.setItem('glowai_purchases', JSON.stringify(purchases));
+            } catch (e) {
+                purchases.pop();
+                alert('No se pudo guardar el pedido en este navegador. Revisa la configuración de almacenamiento.');
+                return;
+            }
+
+            cart = [];
+            updateCartUI();
+            closeCart();
+            renderPurchaseHistory();
+            alert('¡Pedido registrado! Esta demo no procesa pagos reales.');
+            document.getElementById('sec-compras').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function persistSavedCards() {
+            try {
+                localStorage.setItem('glowai_saved_cards', JSON.stringify(savedCards));
+            } catch (e) {
+                alert('No se pudieron guardar las tarjetas en este navegador.');
+            }
+        }
+
+        function renderSavedCards() {
+            const list = document.getElementById('saved-cards');
+            const empty = document.getElementById('no-cards-message');
+            if (!list || !empty) return;
+
+            empty.classList.toggle('hidden', savedCards.length > 0);
+            list.innerHTML = savedCards.map(card => `
+                <div class="border rounded-lg p-2 flex items-start gap-2 text-xs">
+                    <input type="radio" name="saved-card" value="${escapeHtml(card.id)}"
+                        ${selectedCardId === card.id ? 'checked' : ''} aria-label="Seleccionar tarjeta">
+                    <span class="flex-1">
+                        <strong>${escapeHtml(card.holder)}</strong><br>
+                        •••• •••• •••• ${escapeHtml(card.last4)}<br>
+                        Vence ${escapeHtml(card.expiry)}
+                    </span>
+                    <button type="button" data-remove-card="${escapeHtml(card.id)}"
+                        class="text-rose-600 font-bold">Eliminar</button>
+                </div>
+            `).join('');
+
+            list.querySelectorAll('input[name="saved-card"]').forEach(input => {
+                input.addEventListener('change', () => { selectedCardId = input.value; });
+            });
+            list.querySelectorAll('[data-remove-card]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.removeCard;
+                    savedCards = savedCards.filter(card => card.id !== id);
+                    if (selectedCardId === id) selectedCardId = '';
+                    persistSavedCards();
+                    renderSavedCards();
+                });
+            });
+        }
+
+        function saveCard() {
+            const holder = document.getElementById('card-holder').value.trim();
+            const number = document.getElementById('card-number').value.replace(/\D/g, '');
+            const expiry = document.getElementById('card-expiry').value.trim();
+            const cvv = document.getElementById('card-cvv').value.trim();
+
+            if (!holder || number.length < 12 || number.length > 19 ||
+                !/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry) || !/^\d{3,4}$/.test(cvv)) {
+                alert('Revisa el nombre, número, vencimiento y CVV de la tarjeta.');
+                return;
+            }
+
+            const card = {
+                id: Date.now().toString(),
+                holder,
+                last4: number.slice(-4),
+                expiry
+            };
+            savedCards.push(card);
+            selectedCardId = card.id;
+            persistSavedCards();
+            renderSavedCards();
+
+            document.getElementById('card-form').classList.add('hidden');
+            document.getElementById('card-holder').value = '';
+            document.getElementById('card-number').value = '';
+            document.getElementById('card-expiry').value = '';
+            document.getElementById('card-cvv').value = '';
+            alert('Tarjeta agregada. Esta demostración no procesa pagos reales.');
+        }
+
+        function exportPurchases() {
+            if (!purchases.length) {
+                alert('Todavía no hay compras para exportar.');
+                return;
+            }
+            const rows = [[
+                'Pedido', 'Fecha', 'Nombre de la clienta', 'Dirección', 'Teléfono',
+                'Método de pago', 'Últimos 4 dígitos', 'Producto', 'Cantidad',
+                'Precio unitario', 'Subtotal', 'Total'
+            ]];
+            purchases.forEach(p => (p.items || []).forEach(item => rows.push([
+                p.id, p.date, p.clientName || '', p.clientAddress || '', p.clientPhone || '',
+                p.paymentMethod || '', p.cardLast4 || '', item.name, item.qty, item.price,
+                (item.price * item.qty).toFixed(2), Number(p.total).toFixed(2)
+            ])));
+            if (window.XLSX) {
+                const sheet = XLSX.utils.aoa_to_sheet(rows);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, sheet, 'Compras');
+                XLSX.writeFile(workbook, 'historial_glowai.xlsx');
+            } else {
+                const csv = rows.map(row => row.map(value => '"' + String(value).replace(/"/g, '""') + '"').join(';')).join('\r\n');
+                const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8;'});
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'historial_glowai.csv';
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function scrollToSection(id) {
+            const section = document.getElementById(id);
+            if (section) section.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+
+        function setFilter(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                const active = btn.dataset.cat === category;
+                btn.classList.toggle('bg-glow-500', active);
+                btn.classList.toggle('text-white', active);
+                btn.classList.toggle('bg-glow-100', !active);
+                btn.classList.toggle('text-glow-600', !active);
+                btn.classList.toggle('shadow-sm', active);
+                btn.classList.toggle('border', !active);
+                btn.classList.toggle('border-glow-200', !active);
+            });
+            renderProducts();
+        }
+
+        function openChat() {
+            const chat = document.getElementById('chat-window');
+            chat.classList.remove('hidden');
+            chat.classList.add('flex');
+            document.getElementById('chat-input').focus();
+        }
+        function closeChat() {
+            const chat = document.getElementById('chat-window');
+            chat.classList.add('hidden');
+            chat.classList.remove('flex');
+        }
+
+        function addChatMessage(text, sender) {
+            const body = document.getElementById('chat-body');
+            const bubble = document.createElement('div');
+            bubble.className = sender === 'user'
+                ? 'chat-msg bg-glow-500 text-white p-3 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] ml-auto'
+                : 'chat-msg bot bg-white border border-glow-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-gray-800 max-w-[90%]';
+            bubble.textContent = text;
+            body.appendChild(bubble);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        // Base ampliada de conocimientos de Glowy, basada en los productos proporcionados.
+        // Se mantiene separada de "products" para no duplicar ni romper el catálogo y el carrito.
+        const glowyKnowledge = [
+            { name: "Limpiador Facial Hidratante", price: 180, category: "Skincare", skinType: "Piel seca y normal", desc: "Limpia suavemente la piel.", benefit: "Ayuda a limpiar la piel sin eliminar su hidratación natural.", use: "Aplica sobre el rostro húmedo, masajea suavemente y enjuaga." },
+            { name: "Sérum de Ácido Hialurónico", price: 250, category: "Skincare", skinType: "Todos los tipos de piel", desc: "Sérum hidratante para el rostro.", benefit: "Ayuda a mantener la piel hidratada y suave.", use: "Aplica unas gotas sobre la piel limpia." },
+            { name: "Sérum Niacinamida 10%", price: 220, category: "Skincare", skinType: "Piel grasa y mixta", desc: "Sérum para el cuidado facial.", benefit: "Ayuda a controlar el exceso de grasa y mejorar la apariencia de los poros.", use: "Aplica unas gotas sobre el rostro limpio." },
+            { name: "Sérum Vitamina C Iluminador", price: 280, category: "Skincare", skinType: "Piel normal, mixta y grasa", desc: "Sérum iluminador.", benefit: "Ayuda a mejorar la apariencia del tono de la piel.", use: "Utiliza según las instrucciones del producto y aplica protector solar durante el día." },
+            { name: "Crema Hidratante Ceramidas", price: 230, category: "Skincare", skinType: "Piel seca y normal", desc: "Crema hidratante facial.", benefit: "Ayuda a mantener la hidratación y la barrera cutánea.", use: "Aplica sobre el rostro limpio." },
+            { name: "Protector Solar FPS 50+", price: 300, category: "Skincare", skinType: "Todos los tipos de piel", desc: "Protector solar facial.", benefit: "Ayuda a proteger contra los rayos UVA y UVB.", use: "Aplica cada mañana y reaplica aproximadamente cada dos horas al estar al aire libre." },
+            { name: "Tónico Exfoliante AHA/BHA", price: 260, category: "Skincare", skinType: "Piel grasa y mixta", desc: "Tónico exfoliante facial.", benefit: "Ayuda a mejorar la textura de la piel.", use: "Empieza con poca frecuencia y sigue las instrucciones del envase." },
+            { name: "Contorno de Ojos con Cafeína", price: 210, category: "Skincare", skinType: "Todos los tipos de piel", desc: "Producto para el contorno de ojos.", benefit: "Ayuda a mejorar la apariencia de bolsas y signos de cansancio.", use: "Aplica una pequeña cantidad dando suaves toques." },
+            { name: "Base Hidratante SkinGlow", price: 320, category: "Rostro", skinType: "Piel normal y seca", desc: "Base de maquillaje hidratante.", benefit: "Ayuda a unificar visualmente el tono de la piel.", use: "Extiende con brocha, esponja o dedos." },
+            { name: "Polvo Compacto Mate", price: 190, category: "Rostro", skinType: "Piel grasa y mixta", desc: "Polvo compacto para el rostro.", benefit: "Ayuda a controlar el brillo.", use: "Aplica una pequeña cantidad sobre las zonas que deseas matificar." },
+            { name: "Corrector Alta Cobertura", price: 170, category: "Rostro", skinType: "Todos los tipos de piel", desc: "Corrector de maquillaje.", benefit: "Ayuda a disimular ojeras e imperfecciones.", use: "Aplica pequeñas cantidades y difumina." },
+            { name: "Rubor en Crema Glow Touch", price: 160, category: "Rostro", skinType: "Todos los tipos de piel", desc: "Rubor en crema.", benefit: "Aporta color a las mejillas.", use: "Aplica una pequeña cantidad y difumina suavemente." },
+            { name: "Máscara Pestañas Volumétrica", price: 180, category: "Ojos", skinType: "Todos los tipos de piel", desc: "Máscara para pestañas.", benefit: "Aporta volumen y longitud a las pestañas.", use: "Aplica desde la raíz hacia las puntas." },
+            { name: "Tinta Velvet para Labios", price: 150, category: "Labios", skinType: "Todos los tipos de piel", desc: "Tinta de color para labios.", benefit: "Aporta color intenso a los labios.", use: "Aplica directamente sobre los labios limpios." },
+            { name: "Fijador de Maquillaje", price: 200, category: "Rostro", skinType: "Todos los tipos de piel", desc: "Fijador para maquillaje.", benefit: "Ayuda a prolongar la duración del maquillaje.", use: "Aplica siguiendo las instrucciones del envase." }
+        ];
+
+        function normalizeGlowyText(value) {
+            return String(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+        }
+
+        function getAssistantReply(message) {
+            const text = normalizeGlowyText(message);
+            if (!text) return 'Escribe una pregunta para que pueda ayudarte. ✨';
+            if (/^(hola|buenas|saludos|hey)\b/.test(text)) {
+                return '¡Hola! Soy Glowy ✨. Pregúntame por los productos, sus beneficios, cómo utilizarlos o qué opciones pueden adaptarse a tu tipo de piel.';
+            }
+
+            const product = glowyKnowledge
+                .filter(item => {
+                    const name = normalizeGlowyText(item.name);
+                    return text.includes(name) || name.includes(text);
+                })
+                .sort((a, b) => b.name.length - a.name.length)[0];
+
+            if (product) {
+                const catalogMatch = products.find(item => normalizeGlowyText(item.name) === normalizeGlowyText(product.name));
+                const price = catalogMatch ? catalogMatch.price : product.price;
+                if (product.category === 'Labios' || product.category === 'Ojos' || product.category === 'Rostro') {
+                    setFilter(product.category);
+                    scrollToSection('sec-catalogo');
+                } else {
+                    setFilter('Skincare');
+                    scrollToSection('sec-catalogo');
+                }
+                return `✨ ${product.name}\n\n💲 Precio: $${Number(price).toFixed(2)} MXN${catalogMatch ? ' (precio del catálogo)' : ' (precio de referencia de la guía de Glowy)'}\n\n📂 Categoría: ${product.category}\n\n🎯 Tipo de piel:\n${product.skinType}\n\n📝 Descripción:\n${product.desc}\n\n🌟 Beneficios:\n${product.benefit}\n\n📌 Modo de uso:\n${product.use}\n\n💖 Consejo GlowAI:\nSigue las instrucciones del envase y suspende su uso si causa irritación.`;
+            }
+
+            if (/(grasa|oleosa|brillo|poros)/.test(text)) {
+                return '✨ Productos recomendados para piel grasa:\n\n• Sérum Niacinamida 10%\n• Tónico Exfoliante AHA/BHA\n• Protector Solar FPS 50+\n• Polvo Compacto Mate\n\nEscribe el nombre de un producto para conocer su precio, beneficios y modo de uso.';
+            }
+            if (/(seca|reseca|tirante|hidratacion)/.test(text)) {
+                return '✨ Productos recomendados para piel seca:\n\n• Limpiador Facial Hidratante\n• Sérum de Ácido Hialurónico\n• Crema Hidratante Ceramidas\n• Base Hidratante SkinGlow\n\nEscribe el nombre de un producto para conocer sus detalles.';
+            }
+            if (/mixta/.test(text)) {
+                return '✨ Productos recomendados para piel mixta:\n\n• Sérum Niacinamida 10%\n• Sérum Vitamina C Iluminador\n• Protector Solar FPS 50+\n\nPuedes consultar cada producto por su nombre.';
+            }
+            if (/(labios|labial|tinta)/.test(text)) {
+                setFilter('Labios'); scrollToSection('sec-catalogo');
+                return '💄 Te muestro la categoría Labios. Busca Tinta Velvet para Labios y pregúntame por ella para ver sus detalles.';
+            }
+            if (/(ojos|pestanas|ojeras|cafeina)/.test(text)) {
+                setFilter('Ojos'); scrollToSection('sec-catalogo');
+                return '👀 Te muestro la categoría Ojos. Puedes consultar la Máscara Pestañas Volumétrica o el Contorno de Ojos con Cafeína.';
+            }
+            if (/(rostro|base|corrector|rubor|maquillaje|polvo|fijador)/.test(text)) {
+                setFilter('Rostro'); scrollToSection('sec-catalogo');
+                return '💖 Te muestro los productos de Rostro. Puedes preguntar por la Base Hidratante SkinGlow, el Corrector Alta Cobertura, el Polvo Compacto Mate o el Fijador de Maquillaje.';
+            }
+            if (/(diagnostico|rutina|test|piel)/.test(text)) {
+                return '✨ Mini diagnóstico GlowAI\n\nDespués de lavar tu cara, ¿qué notas más?\n\n1. Seca: tirantez o resequedad.\n2. Grasa: brillo durante el día.\n3. Mixta: brillo en algunas zonas y resequedad en otras.\n\nEscribe “seca”, “grasa” o “mixta” y te recomendaré productos. Esta orientación no sustituye la valoración de un profesional.';
+            }
+            return '✨ Soy Glowy y puedo ayudarte con nuestro catálogo.\n\nPrueba preguntando por:\n\n• Sérum Niacinamida 10%\n• Protector Solar FPS 50+\n• Base Hidratante SkinGlow\n• Productos para piel grasa\n• Productos para piel seca\n• Productos para labios';
+        }
+
+        function sendChatMessage(message) {
+            const clean = message.trim();
+            if (!clean) return;
+            addChatMessage(clean, 'user');
+            document.getElementById('chat-input').value = '';
+            addChatMessage(getAssistantReply(clean), 'bot');
+        }
+
+        function startSkinTest() {
+            openChat();
+            addChatMessage('Quiero iniciar el diagnóstico de piel.', 'user');
+            addChatMessage('¡Vamos paso a paso! Después de lavar tu cara, ¿qué notas más: tirantez o resequedad, brillo durante el día, o una mezcla de ambas zonas? Escribe “seca”, “grasa” o “mixta”.', 'bot');
+            document.getElementById('chat-input').focus();
+        }
+
+        // --- EVENTOS: se conectan todos los botones y enlaces ---
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProducts();
+            loadPurchases();
+            renderPurchaseHistory();
+            updateCartUI();
+
+            document.querySelectorAll('.filter-btn').forEach(btn =>
+                btn.addEventListener('click', () => setFilter(btn.dataset.cat))
+            );
+
+            document.getElementById('nav-cat').addEventListener('click', () => scrollToSection('sec-catalogo'));
+            document.getElementById('nav-diag').addEventListener('click', startSkinTest);
+            document.getElementById('nav-compras').addEventListener('click', () => scrollToSection('sec-compras'));
+            document.getElementById('btn-hero-ia').addEventListener('click', startSkinTest);
+
+            document.getElementById('btn-open-cart').addEventListener('click', openCart);
+            document.getElementById('btn-close-cart').addEventListener('click', closeCart);
+            document.getElementById('cart-modal').addEventListener('click', event => {
+                if (event.target.id === 'cart-modal') closeCart();
+            });
+            document.getElementById('btn-checkout').addEventListener('click', checkout);
+            document.getElementById('btn-export-excel').addEventListener('click', exportPurchases);
+
+            document.getElementById('payment-method').addEventListener('change', event => {
+                const manager = document.getElementById('card-manager');
+                manager.classList.toggle('hidden', event.target.value !== 'Tarjeta de débito/crédito');
+                if (event.target.value === 'Tarjeta de débito/crédito') renderSavedCards();
+            });
+            document.getElementById('btn-add-card').addEventListener('click', () => {
+                document.getElementById('card-form').classList.remove('hidden');
+            });
+            document.getElementById('btn-cancel-card').addEventListener('click', () => {
+                document.getElementById('card-form').classList.add('hidden');
+            });
+            document.getElementById('btn-save-card').addEventListener('click', saveCard);
+            renderSavedCards();
+
+            document.getElementById('btn-toggle-chat').addEventListener('click', () => {
+                const chat = document.getElementById('chat-window');
+                if (chat.classList.contains('hidden')) openChat();
+                else closeChat();
+            });
+            document.getElementById('btn-close-chat').addEventListener('click', closeChat);
+            document.getElementById('btn-start-test').addEventListener('click', startSkinTest);
+            document.getElementById('chat-form').addEventListener('submit', event => {
+                event.preventDefault();
+                sendChatMessage(document.getElementById('chat-input').value);
+            });
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape') {
+                    closeCart();
+                    closeChat();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
